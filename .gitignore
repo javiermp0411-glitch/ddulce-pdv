@@ -6,6 +6,9 @@ dist/
 # dependencies
 node_modules/
 
+# Local agent skills and tooling
+.agents/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
@@ -15,7 +18,11 @@ pnpm-debug.log*
 
 # environment variables
 .env
+.env.local
 .env.production
+
+# Private temporary business reference; never commit or publish
+/Daylú Dulce.md
 
 # macOS-specific files
 .DS_Store

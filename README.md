@@ -1,43 +1,44 @@
-# Astro Starter Kit: Minimal
+# Daylú Dulce — Punto de venta
+
+Aplicación web para apoyar la operación de la paletería Daylú Dulce. El alcance previsto incluye un dashboard con ventas por día, semana y mes; usuarios y permisos; ventas; entradas y salidas de almacén; punto de venta; y gastos.
+
+## Tecnologías previstas
+
+- **Astro** como aplicación web.
+- **Supabase** para backend y persistencia de datos.
+- **Tailwind CSS** para estilos.
+- **React** únicamente en las partes interactivas que lo necesiten.
+
+La interfaz inicial adapta la estructura de navegación del dashboard de plantilla y utiliza una paleta rosa pastel mexicano. Consulta [`design.md`](design.md) para los tokens visuales. Los datos y cambios de las secciones actuales son de demostración y aún no se guardan en Supabase.
+
+## Estado actual
+
+El proyecto está en etapa inicial. Hay pantallas interactivas de demostración para dashboard, ventas, punto de venta, almacén, gastos y usuarios/permisos. La conexión de datos para estas funciones, autenticación, persistencia y permisos reales todavía no están implementados. No instales dependencias ni ejecutes comandos que cambien el entorno sin autorización explícita del propietario.
+
+## Requisitos actuales
+
+- Node.js `>=22.23.4` (según `package.json`).
+- Dependencias instaladas: Astro, React con integración Astro, Tailwind CSS y `@supabase/supabase-js`.
+
+## Comandos
 
 ```sh
-npm create astro@latest -- --template minimal
+npm run dev
+npm run build
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+La ejecución de estos comandos queda sujeta a la autorización del propietario. Para iniciar el servidor de desarrollo en este proyecto, sigue el procedimiento de [`AGENTS.md`](AGENTS.md).
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Estructura
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/          Código de la aplicación Astro
+public/       Archivos estáticos
+AGENTS.md     Guía breve para agentes y colaboradores
+design.md     Especificación visual pendiente
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Datos internos del negocio
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+El archivo `Daylú Dulce.md` contiene información operativa y comercial privada. Es material de trabajo temporal: no debe publicarse ni incluirse en commits. Está excluido mediante `.gitignore`; elimínalo del espacio de trabajo cuando ya no sea necesario.
