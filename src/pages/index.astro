@@ -1,17 +1,71 @@
 ---
-import PosDashboard from '../components/PosDashboard';
-import '../styles/pos.css';
+import AppLayout from '../layouts/AppLayout.astro';
+import '../styles/landing.css';
 ---
 
-<html lang="es-MX">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="theme-color" content="#fff5f6" />
-		<meta name="description" content="Punto de venta de Daylú Dulce." />
-		<title>Daylú Dulce | Punto de venta</title>
-	</head>
-	<body>
-		<PosDashboard client:load />
-	</body>
-</html>
+<AppLayout title="Daylú Dulce | Paletería" description="Paletas, bolis, aguas frescas y antojitos en Villahermosa, Tabasco.">
+	<header class="landing-header">
+		<a class="landing-brand" href="/" aria-label="Daylú Dulce, inicio">
+			<span class="landing-brand-mark" aria-hidden="true">✿</span>
+			<span><strong>Daylú Dulce</strong><small>Paletería &amp; antojos</small></span>
+		</a>
+		<nav class="landing-nav" aria-label="Navegación de la página">
+			<a href="#menu">Nuestro menú</a>
+			<a href="#visitanos">Visítanos</a>
+			<a class="landing-nav-cta" href="/app">Abrir punto de venta <span aria-hidden="true">↗</span></a>
+		</nav>
+	</header>
+
+	<main>
+		<section class="landing-hero">
+			<div class="hero-copy">
+				<p class="hero-kicker"><span aria-hidden="true">✳</span> Un antojito alegre en Villahermosa</p>
+				<h1>Un día más<br />dulce <span>empieza aquí.</span></h1>
+				<p class="hero-description">Paletas, bolis y aguas frescas para ponerle saborcito a tu día. Hechos para disfrutar, compartir y volver por otro.</p>
+				<div class="hero-actions">
+					<a class="landing-button landing-button-primary" href="#menu">Descubre el menú <span aria-hidden="true">↓</span></a>
+					<a class="landing-button landing-button-soft" href="/app">Ir al punto de venta <span aria-hidden="true">→</span></a>
+				</div>
+				<div class="hero-note"><span class="hero-note-avatars" aria-hidden="true"><i>J</i><i>G</i></span><span><strong>Con cariño, para compartir</strong><small>Un negocio familiar tabasqueño</small></span></div>
+			</div>
+			<div class="hero-art" aria-label="Ilustración de paletas y frutas" role="img">
+				<div class="hero-sun"></div>
+				<div class="hero-fruit fruit-one" aria-hidden="true">🍓</div>
+				<div class="hero-fruit fruit-two" aria-hidden="true">🍋</div>
+				<div class="hero-fruit fruit-three" aria-hidden="true">🥭</div>
+				<div class="hero-spark spark-one" aria-hidden="true">✦</div>
+				<div class="hero-spark spark-two" aria-hidden="true">✳</div>
+				<div class="hero-popsicle pop-one"><span>🍓</span></div>
+				<div class="hero-popsicle pop-two"><span>🍋</span></div>
+				<div class="hero-popsicle pop-three"><span>🥭</span></div>
+				<div class="hero-sticker"><span>Hecho con</span><strong>mucho<br />cariño</strong><i aria-hidden="true">♡</i></div>
+				<div class="hero-caption">Frescura que se antoja <span>✿</span></div>
+			</div>
+		</section>
+
+		<section class="landing-highlights" aria-label="Lo que tenemos para ti">
+			<div><span class="highlight-icon highlight-pink">✿</span><span><strong>Sabores para todos</strong><small>Frutales, cremosos y picositos</small></span></div>
+			<div><span class="highlight-icon highlight-lime">❋</span><span><strong>Preparado al momento</strong><small>Tu paleta, con su toque especial</small></span></div>
+			<div><span class="highlight-icon highlight-yellow">☼</span><span><strong>Un gusto muy nuestro</strong><small>Desde Villahermosa, con cariño</small></span></div>
+		</section>
+
+		<section class="menu-section" id="menu">
+			<div class="section-heading"><div><p class="section-kicker">¿Qué se te antoja?</p><h2>Un menú para <span>sonreír</span></h2></div><p>Estos son algunos favoritos de la casa.<br />¡Siempre hay algo rico esperándote!</p></div>
+			<div class="menu-grid">
+				<article class="menu-card menu-card-rose"><div class="menu-illustration">🍡</div><div class="menu-card-bottom"><div><h3>Paletas preparadas</h3><p>Chamoy, chilito y gomitas</p></div><strong>$20</strong></div></article>
+				<article class="menu-card menu-card-lime"><div class="menu-illustration">🍧</div><div class="menu-card-bottom"><div><h3>Paletas de agua</h3><p>Frutales y refrescantes</p></div><strong>$15</strong></div></article>
+				<article class="menu-card menu-card-yellow"><div class="menu-illustration">🥤</div><div class="menu-card-bottom"><div><h3>Aguas frescas</h3><p>Jamaica o limón · 1 litro</p></div><strong>$20</strong></div></article>
+				<article class="menu-card menu-card-peach"><div class="menu-illustration">🧊</div><div class="menu-card-bottom"><div><h3>Bolis de agua</h3><p>Un clásico para el calor</p></div><strong>$10</strong></div></article>
+			</div>
+			<p class="menu-footnote">Precios de referencia; pueden cambiar según disponibilidad. <a href="/app">Ver el catálogo de la caja →</a></p>
+		</section>
+
+		<section class="visit-section" id="visitanos">
+			<div class="visit-flower" aria-hidden="true">✿</div>
+			<div><p class="section-kicker">Aquí te esperamos</p><h2>Un gustito rico<br />te queda cerquita.</h2><p>Ven por tu antojo favorito. Estamos en Villahermosa, Tabasco.</p></div>
+			<div class="visit-hours"><span class="hours-icon" aria-hidden="true">◷</span><div><strong>Horario</strong><p>Lunes a sábado <b>10:00 a. m. – 5:00 p. m.</b><br />Domingo <b>11:00 a. m. – 5:00 p. m.</b></p><small>El horario puede variar por logística.</small></div></div>
+		</section>
+	</main>
+
+	<footer class="landing-footer"><a class="landing-brand footer-brand" href="/" aria-label="Daylú Dulce, inicio"><span class="landing-brand-mark" aria-hidden="true">✿</span><span><strong>Daylú Dulce</strong><small>Paletería &amp; antojos</small></span></a><span>Un poquito de dulzura, todos los días <i>♡</i></span><a href="/app">Acceso al punto de venta ↗</a></footer>
+</AppLayout>

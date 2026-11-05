@@ -2,7 +2,7 @@
 
 Aplicación web para apoyar la operación de la paletería Daylú Dulce. El alcance previsto incluye un dashboard con ventas por día, semana y mes; usuarios y permisos; ventas; entradas y salidas de almacén; punto de venta; y gastos.
 
-## Tecnologías previstas
+## Tecnologías
 
 - **Astro** como aplicación web.
 - **Supabase** para backend y persistencia de datos.
@@ -30,14 +30,32 @@ npm run preview
 
 La ejecución de estos comandos queda sujeta a la autorización del propietario. Para iniciar el servidor de desarrollo en este proyecto, sigue el procedimiento de [`AGENTS.md`](AGENTS.md).
 
-## Estructura
+## Estructura de la aplicación
 
 ```text
-src/          Código de la aplicación Astro
-public/       Archivos estáticos
-AGENTS.md     Guía breve para agentes y colaboradores
-design.md     Especificación visual pendiente
+src/
+├── layouts/                Documento HTML y estructura compartida de Astro
+├── pages/                  Rutas Astro: landing en `/` y aplicación en `/app`
+├── components/
+│   ├── layout/             Estructura común y navegación
+│   └── ui/                 Componentes reutilizables de interfaz
+├── features/               Pantallas agrupadas por módulo del PDV
+│   ├── dashboard/
+│   ├── sales/
+│   ├── pos/
+│   ├── inventory/
+│   ├── expenses/
+│   └── users/
+├── data/                   Datos de demostración (reemplazables por Supabase)
+├── lib/                    Formateadores y utilidades compartidas
+├── types/                  Tipos de dominio
+└── styles/                 Estilos globales del dashboard
+public/                     Archivos estáticos
+AGENTS.md                   Guía para agentes y colaboradores
+design.md                   Especificación visual
 ```
+
+Cada módulo tiene su propia pantalla React; `src/components/PosDashboard.tsx` solo conserva el estado de navegación y selecciona la pantalla activa. La landing está en `/` y es Astro estático; el dashboard interactivo está en `/app` y React se carga ahí como isla.
 
 ## Datos internos del negocio
 

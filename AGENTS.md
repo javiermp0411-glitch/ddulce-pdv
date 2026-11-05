@@ -25,6 +25,14 @@ Daylú Dulce is a point-of-sale application for a paletería. Planned areas: sal
 - Keep school-dashboard concepts out of the POS. The supplied template's sidebar-and-section-switching structure is adapted for Daylú Dulce.
 - Clearly label sample data and local-only actions as demonstrations; do not imply they persist to Supabase.
 
+## Source organization
+
+- Keep Astro routes and page composition in `src/pages/`.
+- The public landing page is `/`; the interactive point-of-sale application is `/app`.
+- Keep reusable visual components in `src/components/ui/`, shared layout in `src/components/layout/`, and business screens in feature folders under `src/features/`.
+- Keep demonstration fixtures in `src/data/`, shared formatting/helpers in `src/lib/`, and domain types in `src/types/`.
+- `src/components/PosDashboard.tsx` should remain a small composition/navigation entry, not a home for all screen implementations.
+
 ## Documentation
 
 - Keep `README.md` in Spanish and this guide in English.

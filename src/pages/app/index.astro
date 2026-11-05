@@ -1,0 +1,9 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import PosDashboard from '../../components/PosDashboard';
+import '../../styles/dashboard.css';
+---
+
+<AppLayout title="Daylú Dulce | Punto de venta" description="Panel operativo de Daylú Dulce.">
+  <PosDashboard client:load />
+</AppLayout>

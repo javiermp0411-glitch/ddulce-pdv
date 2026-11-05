@@ -46,7 +46,7 @@ components:
 
 ## Overview
 
-The visual language adapts the supplied School Teacher Dashboard's clear sidebar, compact navigation, summary cards, and single-page section switching to Daylú Dulce. Replace all school concepts with paletería operations. The mood is friendly, fresh, and practical for a small neighborhood business: Mexican pastel pink balanced with warm cream, readable dark text, and small lime/guava accents. Avoid a dark institutional sidebar and avoid using decoration that competes with quick checkout tasks.
+The visual language adapts the supplied School Teacher Dashboard's clear sidebar, compact navigation, summary cards, and single-page section switching to Daylú Dulce. Replace all school concepts with paletería operations. The public landing page lives at `/` and is static Astro content; the operational POS dashboard lives at `/app` and is an interactive React island. The mood is friendly, fresh, and practical for a small neighborhood business: Mexican pastel pink balanced with warm cream, readable dark text, and small lime/guava accents. Avoid a dark institutional sidebar and avoid using decoration that competes with quick checkout tasks.
 
 ## Colors
 
@@ -64,7 +64,7 @@ Use a friendly, highly legible sans-serif system stack. Headings should be clear
 
 ## Layout
 
-Use the template's persistent left navigation and main content area, adapting it for dashboard, sales, point of sale, inventory, expenses, and users. Keep checkout controls prominent, tables scannable, and layouts responsive on narrow screens.
+Use the public landing page at `/` to introduce the paletería and direct staff to `/app`. In the POS, use the template's persistent left navigation and main content area, adapting it for dashboard, sales, point of sale, inventory, expenses, and users. Keep checkout controls prominent, tables scannable, and layouts responsive on narrow screens.
 
 ## Elevation & Depth
 
