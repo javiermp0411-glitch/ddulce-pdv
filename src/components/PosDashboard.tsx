@@ -33,14 +33,17 @@ function canOpenSection(section: Section, permissions: PermissionKey[]) {
     users: ['users.read', 'users.manage'],
   };
 
+  if (section === 'users') return false;
   return sectionPermissions[section].some((permission) => permissions.includes(permission));
 }
 
 export default function PosDashboard({ role, permissions, userEmail, displayName, onSignOut }: PosDashboardProps) {
   const visibleSections = useMemo(
-    () => role === 'owner' || role === 'admin'
+    () => role === 'owner'
       ? navigation.map((item) => item.id)
-      : navigation.filter((item) => canOpenSection(item.id, permissions)).map((item) => item.id),
+      : role === 'admin'
+        ? navigation.filter((item) => item.id !== 'users').map((item) => item.id)
+        : navigation.filter((item) => canOpenSection(item.id, permissions)).map((item) => item.id),
     [role, permissions],
   );
   const [activeSection, setActiveSection] = useState<Section>(visibleSections[0] ?? 'dashboard');
@@ -65,7 +68,7 @@ export default function PosDashboard({ role, permissions, userEmail, displayName
       case 'pos':
         return <PosPage />;
       case 'inventory':
-        return <InventoryPage />;
+        return <InventoryPage canAdjust={role !== 'staff' || permissions.includes('inventory.adjust')} />;
       case 'expenses':
         return <ExpensesPage />;
       case 'users':

@@ -13,7 +13,7 @@ La interfaz inicial adapta la estructura de navegación del dashboard de plantil
 
 ## Estado actual
 
-El proyecto está en etapa inicial. Las pantallas de dashboard, ventas, punto de venta, almacén y gastos aún usan datos de demostración; sus operaciones no se guardan en Supabase. El acceso consulta perfiles y permisos reales. La invitación de usuarios desde el PDV y la conexión de datos para los módulos operativos aún no están implementadas. No instales dependencias ni ejecutes comandos que cambien el entorno sin autorización explícita del propietario.
+El dashboard y los gastos aún muestran datos de demostración. El almacén, el punto de venta y el historial de ventas ya usan Supabase: las entradas, mermas y ajustes actualizan existencias, y el PDV impide vender más unidades de las disponibles. Los Boings permanecen fuera del catálogo de venta hasta definir su precio. La ropa se vende con precio capturado al momento y no lleva existencias. El acceso consulta perfiles y permisos reales; solo owners pueden administrar usuarios. La Edge Function `invite-user` está desplegada y usa el secreto `APP_URL` configurado en Supabase. No instales dependencias ni ejecutes comandos que cambien el entorno sin autorización explícita del propietario.
 
 ## Requisitos actuales
 
@@ -53,13 +53,16 @@ src/
 ├── lib/                    Formateadores y utilidades compartidas
 ├── types/                  Tipos de dominio
 └── styles/                 Estilos globales del dashboard
-supabase/migrations/         Cambios de esquema de Supabase versionados
+supabase/functions/          Funciones Edge
+supabase/config.toml         Configuración local de funciones
 public/                     Archivos estáticos
 AGENTS.md                   Guía para agentes y colaboradores
 design.md                   Especificación visual
 ```
 
 Cada módulo tiene su propia pantalla React; `src/components/PosDashboard.tsx` solo conserva el estado de navegación y selecciona la pantalla activa. La landing está en `/` y es Astro estático; el dashboard interactivo está en `/app` y React se carga ahí como isla.
+
+Por acuerdo del proyecto, los archivos SQL de migración no se guardan en Git. Los cambios del esquema de inventario y ventas ya están aplicados en el proyecto Supabase.
 
 ## Datos internos del negocio
 

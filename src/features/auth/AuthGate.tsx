@@ -111,8 +111,10 @@ export default function AuthGate() {
         return;
       }
 
-      const permissions = (permissionRows ?? []).map(({ permission_key }) => permission_key);
-      if (!['owner', 'admin'].includes(profile.role) && permissions.length === 0) {
+      const permissions = (permissionRows ?? [])
+        .map(({ permission_key }) => permission_key)
+        .filter((permission) => permission !== 'users.read' && permission !== 'users.manage');
+      if (profile.role === 'staff' && permissions.length === 0) {
         setGate({ kind: 'no-permissions', email: profile.email });
         return;
       }
@@ -193,7 +195,7 @@ export default function AuthGate() {
   }
 
   if (gate.kind === 'pending') {
-    return <AuthNotice title="Acceso pendiente" message={`La cuenta ${gate.email} espera activación de un administrador.`} onSignOut={signOut} />;
+    return <AuthNotice title="Acceso pendiente" message={`La cuenta ${gate.email} espera activación de un owner.`} onSignOut={signOut} />;
   }
 
   if (gate.kind === 'disabled') {
@@ -209,7 +211,7 @@ export default function AuthGate() {
   }
 
   if (gate.kind === 'no-permissions') {
-    return <AuthNotice title="Aún no tienes permisos" message={`Un administrador debe asignar permisos a ${gate.email} antes de entrar a los módulos.`} onSignOut={signOut} />;
+    return <AuthNotice title="Aún no tienes permisos" message={`Un owner debe asignar permisos a ${gate.email} antes de entrar a los módulos.`} onSignOut={signOut} />;
   }
 
   if (gate.kind === 'error') {
