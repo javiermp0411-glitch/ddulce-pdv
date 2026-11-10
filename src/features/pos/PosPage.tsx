@@ -18,6 +18,7 @@ interface CartItem {
   id: string;
   quantity: number;
   customPrice?: number;
+  prepared?: boolean;
 }
 
 const paymentMethods = ['Efectivo', 'Tarjeta', 'Transferencia'] as const;
@@ -28,6 +29,9 @@ export function PosPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('Todos');
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<{ name: string; products: PosProduct[] } | null>(null);
+  const [selectedFlavor, setSelectedFlavor] = useState('');
+  const [prepared, setPrepared] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<(typeof paymentMethods)[number]>('Efectivo');
   const [clothingPrice, setClothingPrice] = useState('');
   const [notice, setNotice] = useState('');
@@ -59,17 +63,27 @@ export function PosPage() {
     (category === 'Todos' || product.category === category)
     && productLabel(product).toLowerCase().includes(query.toLowerCase()),
   );
+  const productGroups = useMemo(() => {
+    const groups = new Map<string, PosProduct[]>();
+    for (const product of filteredProducts) {
+      const group = groups.get(product.name) ?? [];
+      group.push(product);
+      groups.set(product.name, group);
+    }
+    return [...groups].map(([name, groupProducts]) => ({ name, products: groupProducts }));
+  }, [filteredProducts]);
   const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
   const findProduct = (id: string) => products.find((product) => product.id === id);
   const total = cart.reduce((sum, item) => {
     const product = findProduct(item.id);
-    return sum + (item.customPrice ?? product?.sale_price ?? 0) * item.quantity;
+    const price = item.customPrice ?? (product?.sale_price ?? 0) + (item.prepared ? 5 : 0);
+    return sum + price * item.quantity;
   }, 0);
 
-  const addItem = (id: string) => {
+  const addItem = (id: string, isPrepared = false) => {
     const product = findProduct(id);
     if (!product) return;
-    const itemInCart = cart.find((item) => item.id === id);
+    const itemInCart = cart.find((item) => item.id === id && Boolean(item.prepared) === isPrepared);
     const cartQty = itemInCart?.quantity ?? 0;
     if ((cartQty + 1) * product.sale_quantity > product.stock) {
       setError(`No hay suficientes existencias de ${productLabel(product)}.`);
@@ -78,8 +92,19 @@ export function PosPage() {
     setError('');
     setNotice('');
     setCart((current) => itemInCart
-      ? current.map((item) => item.id === id ? { ...item, quantity: item.quantity + 1 } : item)
-      : [...current, { id, quantity: 1 }]);
+      ? current.map((item) => item.id === id && Boolean(item.prepared) === isPrepared ? { ...item, quantity: item.quantity + 1 } : item)
+      : [...current, { id, quantity: 1, prepared: isPrepared }]);
+    setSelectedGroup(null);
+  };
+
+  const openProductGroup = (group: { name: string; products: PosProduct[] }) => {
+    if (group.products.length === 1) {
+      addItem(group.products[0].id);
+      return;
+    }
+    setSelectedGroup(group);
+    setSelectedFlavor(group.products.find((product) => product.stock >= product.sale_quantity)?.id ?? group.products[0]?.id ?? '');
+    setPrepared(false);
   };
 
   const addClothing = (event: FormEvent<HTMLFormElement>) => {
@@ -116,7 +141,7 @@ export function PosPage() {
       const clothing = item.id.startsWith('ropa-usada-');
       return clothing
         ? { product_id: 'ropa-usada', quantity: item.quantity, custom_name: 'Ropa usada', custom_price: item.customPrice }
-        : { product_id: item.id, quantity: item.quantity };
+        : { product_id: item.id, quantity: item.quantity, prepared: Boolean(item.prepared) };
     });
     const { error: saleError } = await supabase.rpc('checkout_sale', {
       p_items: items,
@@ -152,16 +177,19 @@ export function PosPage() {
           </div>
 
           <div className="catalog-grid">
-            {filteredProducts.map((product, index) => {
-              const remaining = Math.floor(product.stock / product.sale_quantity);
-              return <button className="catalog-card" key={product.id} disabled={remaining === 0} onClick={() => addItem(product.id)}>
-                <span className={`catalog-art art-${index % 4}`} aria-hidden="true">{product.category === 'Paletas' ? '🍡' : product.category === 'Bolis' ? '🧊' : product.category === 'Aguas' || product.category === 'Bebidas' ? '🥤' : '🍓'}</span>
-                <span className="catalog-name">{productLabel(product)}</span>
-                <span className="catalog-detail">{remaining === 0 ? 'Agotado' : `${remaining} ${product.sale_quantity > 1 ? 'promos' : product.unit_label} disponibles`}</span>
-                <span className="catalog-price">{money(product.sale_price)} <i>{remaining === 0 ? '—' : '＋'}</i></span>
+            {productGroups.map((group, index) => {
+              const available = group.products.reduce((count, product) => count + Math.floor(product.stock / product.sale_quantity), 0);
+              const hasFlavors = group.products.length > 1;
+              const sample = group.products[0];
+              const lowestPrice = Math.min(...group.products.map((product) => product.sale_price));
+              return <button className="catalog-card" key={group.name} disabled={available === 0} onClick={() => openProductGroup(group)}>
+                <span className={`catalog-art art-${index % 4}`} aria-hidden="true">{sample.category === 'Paletas' ? '🍡' : sample.category === 'Bolis' ? '🧊' : sample.category === 'Aguas' || sample.category === 'Bebidas' ? '🥤' : '🍓'}</span>
+                <span className="catalog-name">{group.name}</span>
+                <span className="catalog-detail">{available === 0 ? 'Agotado' : hasFlavors ? `${group.products.length} sabores · ${available} disponibles` : `${available} ${sample.sale_quantity > 1 ? 'promos' : sample.unit_label} disponibles`}</span>
+                <span className="catalog-price">{hasFlavors ? `Desde ${money(lowestPrice)}` : money(sample.sale_price)} <i>{available === 0 ? '—' : '＋'}</i></span>
               </button>;
             })}
-            {!loading && filteredProducts.length === 0 && <p className="pos-empty-result">No hay productos disponibles en esta categoría o búsqueda.</p>}
+            {!loading && productGroups.length === 0 && <p className="pos-empty-result">No hay productos disponibles en esta categoría o búsqueda.</p>}
             {loading && <p className="pos-empty-result">Cargando catálogo…</p>}
           </div>
 
@@ -177,9 +205,9 @@ export function PosPage() {
           <div className="cart-items">
             {cart.length ? cart.map((item) => {
               const product = findProduct(item.id);
-              const name = product ? productLabel(product) : 'Ropa usada';
-              const price = item.customPrice ?? product?.sale_price ?? 0;
-              return <div className="cart-item" key={item.id}>
+              const name = product ? `${productLabel(product)}${item.prepared ? ' · preparada' : ''}` : 'Ropa usada';
+              const price = item.customPrice ?? ((product?.sale_price ?? 0) + (item.prepared ? 5 : 0));
+              return <div className="cart-item" key={`${item.id}-${Boolean(item.prepared)}`}>
                 <div className="cart-item-main"><strong>{name}</strong><span>{money(price)} c/u</span></div>
                 <div className="quantity-control"><button aria-label={`Quitar una unidad de ${name}`} onClick={() => changeQuantity(item.id, -1)}>−</button><span>{item.quantity}</span><button aria-label={`Agregar una unidad de ${name}`} disabled={Boolean(product && (item.quantity + 1) * product.sale_quantity > product.stock)} onClick={() => changeQuantity(item.id, 1)}>+</button></div>
               </div>;
@@ -192,6 +220,31 @@ export function PosPage() {
           </div>
         </aside>
       </div>
+
+      {selectedGroup && <div className="pos-dialog-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedGroup(null); }}>
+        <section className="pos-flavor-dialog" role="dialog" aria-modal="true" aria-labelledby="flavor-dialog-title">
+          <button className="pos-dialog-close" aria-label="Cerrar selector de sabores" onClick={() => setSelectedGroup(null)}>×</button>
+          <p className="eyebrow">Elige una opción</p>
+          <h2 id="flavor-dialog-title">{selectedGroup.name}</h2>
+          <p className="pos-dialog-description">Selecciona el sabor que quieres agregar a la cuenta.</p>
+          <div className="flavor-options" role="group" aria-label="Sabores disponibles">
+            {selectedGroup.products.map((product) => {
+              const available = Math.floor(product.stock / product.sale_quantity);
+              return <button key={product.id} className={`flavor-option ${selectedFlavor === product.id ? 'selected' : ''}`} disabled={available === 0} onClick={() => setSelectedFlavor(product.id)}>
+                <span><strong>{product.variant || product.name}</strong><small>{available === 0 ? 'Agotado' : `${available} disponibles`}</small></span>
+                <b>{money(product.sale_price)}</b>
+              </button>;
+            })}
+          </div>
+          {selectedGroup.name === 'Paleta de agua' && <label className="prepared-option">
+            <input type="checkbox" checked={prepared} onChange={(event) => setPrepared(event.target.checked)} />
+            <span><strong>Preparada con chamoy y gomitas</strong><small>Precio de la paleta preparada: $20.00</small></span>
+          </label>}
+          <button className="button button-primary flavor-add-button" disabled={!selectedFlavor || !selectedGroup.products.some((product) => product.id === selectedFlavor && product.stock >= product.sale_quantity)} onClick={() => addItem(selectedFlavor, prepared)}>
+            Agregar {prepared ? 'preparada' : 'al carrito'} · {money((findProduct(selectedFlavor)?.sale_price ?? 0) + (prepared ? 5 : 0))}
+          </button>
+        </section>
+      </div>}
     </>
   );
 }

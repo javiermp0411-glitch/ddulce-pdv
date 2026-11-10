@@ -64,7 +64,7 @@ export default function PosDashboard({ role, permissions, userEmail, displayName
   const renderSection = () => {
     switch (activeSection) {
       case 'sales':
-        return <SalesPage />;
+        return <SalesPage canManage={role === 'owner' || role === 'admin'} />;
       case 'pos':
         return <PosPage />;
       case 'inventory':
