@@ -1,6 +1,18 @@
 export type Section = 'dashboard' | 'sales' | 'pos' | 'inventory' | 'expenses' | 'users';
 export type Period = 'Hoy' | 'Esta semana' | 'Este mes';
 export type ProductCategory = 'Paletas' | 'Bolis' | 'Aguas' | 'Botanas';
+export type AppRole = 'owner' | 'admin' | 'staff';
+export type PermissionKey =
+  | 'dashboard.read'
+  | 'sales.read'
+  | 'sales.create'
+  | 'pos.use'
+  | 'inventory.read'
+  | 'inventory.adjust'
+  | 'expenses.read'
+  | 'expenses.create'
+  | 'users.read'
+  | 'users.manage';
 
 export interface NavigationItem {
   id: Section;

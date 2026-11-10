@@ -9,16 +9,18 @@ Aplicación web para apoyar la operación de la paletería Daylú Dulce. El alca
 - **Tailwind CSS** para estilos.
 - **React** únicamente en las partes interactivas que lo necesiten.
 
-La interfaz inicial adapta la estructura de navegación del dashboard de plantilla y utiliza una paleta rosa pastel mexicano. Consulta [`design.md`](design.md) para los tokens visuales. Los datos y cambios de las secciones actuales son de demostración y aún no se guardan en Supabase.
+La interfaz inicial adapta la estructura de navegación del dashboard de plantilla y utiliza una paleta rosa pastel mexicano. Consulta [`design.md`](design.md) para los tokens visuales. El acceso a `/app` usa correo y contraseña; los usuarios invitados configuran su contraseña al aceptar la invitación. El acceso comprueba el perfil y permisos en Supabase y filtra la navegación según los permisos.
 
 ## Estado actual
 
-El proyecto está en etapa inicial. Hay pantallas interactivas de demostración para dashboard, ventas, punto de venta, almacén, gastos y usuarios/permisos. La conexión de datos para estas funciones, autenticación, persistencia y permisos reales todavía no están implementados. No instales dependencias ni ejecutes comandos que cambien el entorno sin autorización explícita del propietario.
+El proyecto está en etapa inicial. Las pantallas de dashboard, ventas, punto de venta, almacén y gastos aún usan datos de demostración; sus operaciones no se guardan en Supabase. El acceso consulta perfiles y permisos reales. La invitación de usuarios desde el PDV y la conexión de datos para los módulos operativos aún no están implementadas. No instales dependencias ni ejecutes comandos que cambien el entorno sin autorización explícita del propietario.
 
 ## Requisitos actuales
 
 - Node.js `>=22.23.4` (según `package.json`).
 - Dependencias instaladas: Astro, React con integración Astro, Tailwind CSS y `@supabase/supabase-js`.
+
+Para desarrollo local, copia `.env.example` a `.env.local` y configura la URL y la clave **publishable** del proyecto Supabase. No pongas una `secret` o `service_role` key en variables `PUBLIC_` ni en el navegador.
 
 ## Comandos
 
@@ -40,6 +42,7 @@ src/
 │   ├── layout/             Estructura común y navegación
 │   └── ui/                 Componentes reutilizables de interfaz
 ├── features/               Pantallas agrupadas por módulo del PDV
+│   ├── auth/
 │   ├── dashboard/
 │   ├── sales/
 │   ├── pos/
@@ -50,6 +53,7 @@ src/
 ├── lib/                    Formateadores y utilidades compartidas
 ├── types/                  Tipos de dominio
 └── styles/                 Estilos globales del dashboard
+supabase/migrations/         Cambios de esquema de Supabase versionados
 public/                     Archivos estáticos
 AGENTS.md                   Guía para agentes y colaboradores
 design.md                   Especificación visual

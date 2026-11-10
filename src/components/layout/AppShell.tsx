@@ -4,13 +4,36 @@ import type { Section } from '../../types/app';
 
 interface AppShellProps {
   activeSection: Section;
+  visibleSections: Section[];
   onNavigate: (section: Section) => void;
+  onSignOut: () => void;
+  userName: string;
+  userRole: string;
+  userEmail: string;
   children: ReactNode;
 }
 
-export function AppShell({ activeSection, onNavigate, children }: AppShellProps) {
+export function AppShell({
+  activeSection,
+  visibleSections,
+  onNavigate,
+  onSignOut,
+  userName,
+  userRole,
+  userEmail,
+  children,
+}: AppShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const currentPage = navigation.find((item) => item.id === activeSection)!;
+  const visibleNavigation = navigation.filter((item) => visibleSections.includes(item.id));
+  const initials = userName
+    .trim()
+    .split(/[\s@._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase() || 'DD';
   const navigate = (section: Section) => {
     onNavigate(section);
     setMobileMenuOpen(false);
@@ -27,7 +50,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
         <div className="nav-caption">MENÚ PRINCIPAL</div>
         <nav aria-label="Navegación principal">
           <ul>
-            {navigation.map((item) => (
+            {visibleNavigation.map((item) => (
               <li key={item.id}>
                 <button
                   className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
@@ -49,9 +72,12 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
             <span><strong>Negocio abierto</strong><small>Horario de hoy · hasta 5:00 p. m.</small></span>
           </div>
           <div className="sidebar-user">
-            <span className="user-avatar owner-avatar">DD</span>
-            <span><strong>Daylú Dulce</strong><small>Propietarios</small></span>
-            <span className="more-button" aria-hidden="true">···</span>
+            <span className="user-avatar owner-avatar">{initials}</span>
+            <span className="sidebar-user-info" title={userEmail}>
+              <strong>{userName}</strong>
+              <small>{userRole}</small>
+            </span>
+            <button className="signout-button" type="button" onClick={onSignOut} aria-label="Cerrar sesión" title="Cerrar sesión">↪</button>
           </div>
         </div>
       </aside>
@@ -73,7 +99,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
           <div className="topbar-actions">
             <span className="today-label">Jueves, 5 de noviembre</span>
             <span className="topbar-divider" />
-            <button className="topbar-avatar" aria-label="Perfil de Daylú Dulce">DD</button>
+            <button className="topbar-avatar" aria-label={`Sesión de ${userName}`}>{initials}</button>
           </div>
         </header>
 

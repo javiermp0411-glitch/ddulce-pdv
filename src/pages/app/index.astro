@@ -1,9 +1,10 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
-import PosDashboard from '../../components/PosDashboard';
+import AuthGate from '../../features/auth/AuthGate';
 import '../../styles/dashboard.css';
+import '../../styles/auth.css';
 ---
 
 <AppLayout title="Daylú Dulce | Punto de venta" description="Panel operativo de Daylú Dulce.">
-  <PosDashboard client:load />
+  <AuthGate client:load />
 </AppLayout>

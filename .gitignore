@@ -23,6 +23,7 @@ pnpm-debug.log*
 
 # Private temporary business reference; never commit or publish
 /Daylú Dulce.md
+/supabase/migrations/
 
 # macOS-specific files
 .DS_Store
