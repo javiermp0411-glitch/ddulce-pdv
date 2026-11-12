@@ -134,7 +134,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </div>
       </PageHeading>
 
-      <p className="demo-notice"><span aria-hidden="true">✿</span>Hoy, ventas y transacciones son reales · Semana, mes, gastos, gráfica, productos y ventas recientes son demostraciones.</p>
+      <p className="demo-notice"><span aria-hidden="true">✿</span>Hoy, ventas, transacciones y ventas recientes son reales · Semana, mes, gastos, gráfica y productos destacados son demostraciones.</p>
       {dailyError && <p className="inline-feedback form-error" role="alert">{dailyError} Se actualizará al volver a abrir esta pantalla.</p>}
 
       <div className="stat-grid">
@@ -182,7 +182,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
       <section className="panel recent-panel">
         <div className="panel-heading">
-          <div><h2>Ventas recientes</h2><p>Movimientos registrados en caja</p></div>
+          <div><h2>Ventas recientes</h2><p>Últimas ventas completadas en caja</p></div>
           <button className="text-button" onClick={() => onNavigate('sales')}>Ver todas <span>→</span></button>
         </div>
         <SalesTable compact />
