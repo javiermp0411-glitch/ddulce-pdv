@@ -38,6 +38,9 @@ export function PosPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [charging, setCharging] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [amountReceived, setAmountReceived] = useState('');
+  const [paymentError, setPaymentError] = useState('');
 
   const loadProducts = useCallback(async () => {
     const { data, error: loadError } = await supabase
@@ -79,6 +82,9 @@ export function PosPage() {
     const price = item.customPrice ?? (product?.sale_price ?? 0) + (item.prepared ? 5 : 0);
     return sum + price * item.quantity;
   }, 0);
+  const receivedValue = Number(amountReceived || 0);
+  const changeDue = paymentMethod === 'Efectivo' ? Math.max(0, receivedValue - total) : 0;
+  const remainingToPay = Math.max(0, total - receivedValue);
 
   const addItem = (id: string, isPrepared = false) => {
     const product = findProduct(id);
@@ -148,17 +154,36 @@ export function PosPage() {
       p_payment_method: paymentMethod,
     });
     if (saleError) {
-      setError(saleError.message.toLowerCase().includes('existencia')
+      const message = saleError.message.toLowerCase().includes('existencia')
         ? 'La existencia cambió y ya no alcanza para esa venta. Actualizamos el catálogo; revisa el carrito.'
-        : 'No se pudo completar la venta. No se cobró ni se descontó inventario.');
+        : 'No se pudo completar la venta. No se cobró ni se descontó inventario.';
+      setError(message);
+      setPaymentError(message);
       await loadProducts();
       setCharging(false);
       return;
     }
     setCart([]);
+    setShowPayment(false);
+    setAmountReceived('');
     setNotice(`Venta registrada por ${money(total)}. El inventario se actualizó.`);
     await loadProducts();
     setCharging(false);
+  };
+
+  const openPayment = () => {
+    if (!cart.length) return;
+    setPaymentError('');
+    setAmountReceived(paymentMethod === 'Efectivo' ? '' : total.toFixed(2));
+    setShowPayment(true);
+  };
+
+  const appendPaymentKey = (key: string) => {
+    setAmountReceived((current) => {
+      if (key === '.') return current.includes('.') ? current : `${current || '0'}.`;
+      if (current.includes('.') && current.split('.')[1].length >= 2) return current;
+      return `${current === '0' ? '' : current}${key}`;
+    });
   };
 
   return (
@@ -216,7 +241,7 @@ export function PosPage() {
           <div className="cart-summary">
             <label className="payment-method-label">Método de pago<select value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value as (typeof paymentMethods)[number])}>{paymentMethods.map((method) => <option key={method}>{method}</option>)}</select></label>
             <div><span>Subtotal</span><strong>{money(total)}</strong></div><div><span>Descuento</span><strong>{money(0)}</strong></div><div className="cart-total"><span>Total</span><strong>{money(total)}</strong></div>
-            <button className="button button-primary charge-button" disabled={!cart.length || charging} onClick={() => void charge()}>{charging ? 'Registrando…' : <>Cobrar <span>·</span> {money(total)}</>}</button>
+            <button className="button button-primary charge-button" disabled={!cart.length || charging} onClick={openPayment}>Cobrar <span>·</span> {money(total)}</button>
           </div>
         </aside>
       </div>
@@ -243,6 +268,29 @@ export function PosPage() {
           <button className="button button-primary flavor-add-button" disabled={!selectedFlavor || !selectedGroup.products.some((product) => product.id === selectedFlavor && product.stock >= product.sale_quantity)} onClick={() => addItem(selectedFlavor, prepared)}>
             Agregar {prepared ? 'preparada' : 'al carrito'} · {money((findProduct(selectedFlavor)?.sale_price ?? 0) + (prepared ? 5 : 0))}
           </button>
+        </section>
+      </div>}
+
+      {showPayment && <div className="payment-dialog-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !charging) setShowPayment(false); }}>
+        <section className="payment-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-dialog-title">
+          <button className="pos-dialog-close" aria-label="Cerrar cobro" disabled={charging} onClick={() => setShowPayment(false)}>×</button>
+          <p className="eyebrow">Confirmar cuenta · {paymentMethod}</p>
+          <h2 id="payment-dialog-title">Cobrar</h2>
+          <div className="payment-totals">
+            <div><span>Total de la cuenta</span><strong>{money(total)}</strong></div>
+            <label><span>{paymentMethod === 'Efectivo' ? 'Cantidad recibida' : 'Importe a cobrar'}</span><output>{money(paymentMethod === 'Efectivo' ? receivedValue : total)}</output></label>
+            {paymentMethod === 'Efectivo' && <div className={remainingToPay > 0 ? 'payment-change pending' : 'payment-change'}><span>{remainingToPay > 0 ? 'Falta por cobrar' : 'Cambio'}</span><strong>{money(remainingToPay > 0 ? remainingToPay : changeDue)}</strong></div>}
+          </div>
+          {paymentMethod === 'Efectivo' && <div className="cash-keypad" aria-label="Teclado para capturar el efectivo recibido">
+            {['1','2','3','4','5','6','7','8','9','Limpiar','0','.'].map((key) => <button key={key} type="button" className={key === 'Limpiar' ? 'keypad-clear' : ''} onClick={() => key === 'Limpiar' ? setAmountReceived('') : appendPaymentKey(key)}>{key}</button>)}
+            <button type="button" className="keypad-backspace" aria-label="Borrar último dígito" onClick={() => setAmountReceived((current) => current.slice(0, -1) || '')}>⌫</button>
+          </div>}
+          {paymentMethod !== 'Efectivo' && <p className="payment-exact-note">El pago se registrará por el total exacto de la cuenta.</p>}
+          {paymentError && <p className="form-error" role="alert">{paymentError}</p>}
+          <div className="payment-dialog-actions">
+            <button type="button" className="button button-secondary" disabled={charging} onClick={() => setShowPayment(false)}>Volver a la cuenta</button>
+            <button type="button" className="button button-primary" disabled={charging || (paymentMethod === 'Efectivo' && (!amountReceived || receivedValue < total))} onClick={() => void charge()}>{charging ? 'Registrando…' : <>Confirmar pago · {money(total)}</>}</button>
+          </div>
         </section>
       </div>}
     </>
